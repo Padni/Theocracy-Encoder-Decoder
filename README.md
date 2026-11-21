@@ -23,6 +23,7 @@ This tool allows you to:
 
 ## ✨ Features
 
+- **🌐 Bilingual User Interface**: Switch between 🇵🇱 Polish and 🇬🇧 English at any time with a single click in both C# (.NET 9) and Python (Tkinter) applications.
 - **Automatic Format Detection**: Instantly identifies whether a file is currently:
   - 🟢 **Encrypted** (prefixed with the `RSA4096` header).
   - 🔵 **Decrypted / Plaintext** (raw data ready for editing or encoding).

@@ -49,6 +49,9 @@ W katalogu przygotowano nowoczesne aplikacje okienkowe:
 
 ## 3. Funkcje aplikacji GUI
 
+- **Wielojęzyczność (Bilingual PL / EN)**:
+  - W prawym górnym rogu okna programu znajduje się przełącznik języka (`🇵🇱 Polski` / `🇬🇧 English`).
+  - Cały interfejs (etykiety, przyciski, komunikaty, statusy) natychmiast przełącza się na wybrany język (zarówno w wersji C#, jak i Python).
 - **Wizualny wskaźnik stanu pliku (Badge)**:
   - 🟢 `ZASZYFROWANY [RSA4096]` – plik gotowy do odszyfrowania.
   - 🔵 `ODSZYFROWANY [Jawny]` – plik gotowy do edycji lub zaszyfrowania dla gry.

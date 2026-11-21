@@ -13,6 +13,8 @@ namespace TheocracyEncDecGUI
         private Panel pnlHeader = null!;
         private Label lblTitle = null!;
         private Label lblSubtitle = null!;
+        private Label lblLang = null!;
+        private ComboBox cmbLang = null!;
 
         // Tabs
         private TabControl tabControl = null!;
@@ -75,8 +77,10 @@ namespace TheocracyEncDecGUI
             InitializeComponent();
             BuildCustomUi();
             SetupEvents();
-            LogMessage("Program Theocracy Encoder / Decoder uruchomiony.");
-            LogMessage("Wskazówka: Możesz przeciągnąć plik .tsg lub .txt bezpośrednio do okna programu.");
+            ApplyLanguage();
+            LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
+                ? "Program Theocracy Encoder / Decoder uruchomiony. Wybierz plik lub przeciągnij go do okna."
+                : "Theocracy Encoder / Decoder started. Select a file or drag & drop it into the window.");
         }
 
         private void BuildCustomUi()
@@ -95,34 +99,60 @@ namespace TheocracyEncDecGUI
 
             lblTitle = new Label
             {
-                Text = "THEOCRACY - Save & File Encoder / Decoder",
+                Text = Strings.AppTitle,
                 Font = new Font("Segoe UI", 13F, FontStyle.Bold),
-                ForeColor = Color.FromArgb(240, 192, 64), // Aztec gold accent
+                ForeColor = Color.FromArgb(240, 192, 64),
                 AutoSize = true,
                 Location = new Point(18, 10)
             };
 
             lblSubtitle = new Label
             {
-                Text = "Narzędzie do szyfrowania i odszyfrowywania save'ów (.tsg) oraz plików konfiguracyjnych gry Theocracy",
+                Text = Strings.Subtitle,
                 Font = new Font("Segoe UI", 8.5F, FontStyle.Regular),
                 ForeColor = Color.FromArgb(200, 210, 225),
                 AutoSize = true,
                 Location = new Point(20, 36)
             };
 
+            lblLang = new Label
+            {
+                Text = "🌐 Language / Język:",
+                Font = new Font("Segoe UI", 8.5F),
+                ForeColor = Color.FromArgb(180, 195, 215),
+                AutoSize = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Location = new Point(650, 22)
+            };
+
+            cmbLang = new ComboBox
+            {
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Width = 135,
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Location = new Point(780, 18),
+                BackColor = Color.White,
+                Cursor = Cursors.Hand
+            };
+            cmbLang.Items.Add("🇵🇱 Polski");
+            cmbLang.Items.Add("🇬🇧 English");
+            cmbLang.SelectedIndex = 0;
+
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSubtitle);
+            pnlHeader.Controls.Add(lblLang);
+            pnlHeader.Controls.Add(cmbLang);
 
             // 2. Status Strip at bottom
             statusStrip = new StatusStrip();
-            statusLabel = new ToolStripStatusLabel("Gotowy do pracy") { Spring = true, TextAlign = ContentAlignment.MiddleLeft };
+            statusLabel = new ToolStripStatusLabel(Strings.StatusReady) { Spring = true, TextAlign = ContentAlignment.MiddleLeft };
             statusStrip.Items.Add(statusLabel);
 
             // 3. Bottom Log Box
             grpLog = new GroupBox
             {
-                Text = "Dziennik zdarzeń (Log)",
+                Text = Strings.GrpLog,
                 Dock = DockStyle.Bottom,
                 Height = 110,
                 Padding = new Padding(8)
@@ -147,8 +177,8 @@ namespace TheocracyEncDecGUI
                 Padding = new Point(12, 6)
             };
 
-            tabSingle = new TabPage("  Pojedynczy plik  ") { BackColor = Color.FromArgb(245, 247, 250), Padding = new Padding(12) };
-            tabBatch = new TabPage("  Przetwarzanie wsadowe (Wiele plików)  ") { BackColor = Color.FromArgb(245, 247, 250), Padding = new Padding(12) };
+            tabSingle = new TabPage(Strings.TabSingle) { BackColor = Color.FromArgb(245, 247, 250), Padding = new Padding(12) };
+            tabBatch = new TabPage(Strings.TabBatch) { BackColor = Color.FromArgb(245, 247, 250), Padding = new Padding(12) };
 
             tabControl.TabPages.Add(tabSingle);
             tabControl.TabPages.Add(tabBatch);
@@ -162,13 +192,11 @@ namespace TheocracyEncDecGUI
             this.Controls.Add(statusStrip);
             this.Controls.Add(pnlHeader);
 
-            // Enable Drag & Drop on Form
             this.AllowDrop = true;
         }
 
         private void BuildSingleFileTab()
         {
-            // Drop zone at top of tab 1
             pnlDropZone = new Panel
             {
                 Dock = DockStyle.Top,
@@ -180,7 +208,7 @@ namespace TheocracyEncDecGUI
 
             lblDropHint = new Label
             {
-                Text = "Przeciągnij i upuść tutaj plik (.tsg, .txt) lub użyj przycisku obok:",
+                Text = Strings.DropHint,
                 Font = new Font("Segoe UI", 9.5F, FontStyle.Regular),
                 ForeColor = Color.FromArgb(60, 70, 85),
                 AutoSize = true,
@@ -189,7 +217,7 @@ namespace TheocracyEncDecGUI
 
             btnBrowse = new Button
             {
-                Text = "📂 Przeglądaj...",
+                Text = Strings.BtnBrowse,
                 Font = new Font("Segoe UI", 9F, FontStyle.Bold),
                 Size = new Size(130, 36),
                 Location = new Point(480, 14),
@@ -206,21 +234,21 @@ namespace TheocracyEncDecGUI
             // File info group
             grpFileInfo = new GroupBox
             {
-                Text = "Informacje o wybranym pliku",
+                Text = Strings.GrpFileInfo,
                 Dock = DockStyle.Top,
                 Height = 135,
                 Padding = new Padding(10)
             };
 
-            lblFilePath = new Label { Text = "Plik:", Location = new Point(15, 25), AutoSize = true, Font = new Font("Segoe UI", 9F, FontStyle.Bold) };
+            lblFilePath = new Label { Text = Strings.LblFile, Location = new Point(15, 25), AutoSize = true, Font = new Font("Segoe UI", 9F, FontStyle.Bold) };
             txtFilePath = new TextBox { Location = new Point(60, 22), Width = 520, ReadOnly = true, BackColor = Color.White };
 
-            lblFileSize = new Label { Text = "Rozmiar: Brak pliku", Location = new Point(15, 52), AutoSize = true };
-            lblFileModified = new Label { Text = "Data modyfikacji: -", Location = new Point(250, 52), AutoSize = true };
+            lblFileSize = new Label { Text = Strings.LblSizeNoFile, Location = new Point(15, 52), AutoSize = true };
+            lblFileModified = new Label { Text = Strings.LblModifiedNoFile, Location = new Point(250, 52), AutoSize = true };
 
             lblBadge = new Label
             {
-                Text = "BRAK PLIKU",
+                Text = Strings.BadgeNoFile,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
                 Location = new Point(600, 20),
@@ -231,7 +259,7 @@ namespace TheocracyEncDecGUI
 
             lblDetails = new Label
             {
-                Text = "Wybierz plik zapisu gry (.tsg) lub plik konfiguracyjny (.txt), aby zbadać jego strukturę.",
+                Text = Strings.DetailsDefaultHint,
                 Location = new Point(15, 78),
                 Size = new Size(820, 48),
                 ForeColor = Color.FromArgb(50, 60, 75)
@@ -247,7 +275,7 @@ namespace TheocracyEncDecGUI
             // Actions group
             grpActions = new GroupBox
             {
-                Text = "Operacje szyfrowania / deszyfrowania",
+                Text = Strings.GrpActions,
                 Dock = DockStyle.Top,
                 Height = 85,
                 Padding = new Padding(10)
@@ -255,11 +283,11 @@ namespace TheocracyEncDecGUI
 
             btnDecode = new Button
             {
-                Text = "🔓 Odszyfruj (Decode)",
+                Text = Strings.BtnDecode,
                 Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
                 Size = new Size(180, 40),
                 Location = new Point(15, 26),
-                BackColor = Color.FromArgb(39, 174, 96), // Green
+                BackColor = Color.FromArgb(39, 174, 96),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Enabled = false,
@@ -269,11 +297,11 @@ namespace TheocracyEncDecGUI
 
             btnEncode = new Button
             {
-                Text = "🔒 Zaszyfruj (Encode)",
+                Text = Strings.BtnEncode,
                 Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
                 Size = new Size(180, 40),
                 Location = new Point(205, 26),
-                BackColor = Color.FromArgb(230, 126, 34), // Orange/Amber
+                BackColor = Color.FromArgb(230, 126, 34),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 Enabled = false,
@@ -283,7 +311,7 @@ namespace TheocracyEncDecGUI
 
             btnToggle = new Button
             {
-                Text = "🔄 Przełącz (Auto)",
+                Text = Strings.BtnToggle,
                 Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
                 Size = new Size(150, 40),
                 Location = new Point(395, 26),
@@ -297,7 +325,7 @@ namespace TheocracyEncDecGUI
 
             btnSaveAs = new Button
             {
-                Text = "💾 Zapisz jako...",
+                Text = Strings.BtnSaveAs,
                 Font = new Font("Segoe UI", 9F, FontStyle.Regular),
                 Size = new Size(130, 40),
                 Location = new Point(555, 26),
@@ -311,7 +339,7 @@ namespace TheocracyEncDecGUI
 
             chkBackup = new CheckBox
             {
-                Text = "Twórz kopię zapasową (.bak) przed zapisem",
+                Text = Strings.ChkBackup,
                 Checked = true,
                 AutoSize = true,
                 Location = new Point(695, 36),
@@ -327,7 +355,7 @@ namespace TheocracyEncDecGUI
             // Hex Dump group
             grpHex = new GroupBox
             {
-                Text = "Podgląd heksadecymalny i tekstowy (pierwsze 256 bajtów)",
+                Text = Strings.GrpHex,
                 Dock = DockStyle.Fill,
                 Padding = new Padding(8)
             };
@@ -345,7 +373,6 @@ namespace TheocracyEncDecGUI
             };
             grpHex.Controls.Add(txtHexDump);
 
-            // Docking order
             tabSingle.Controls.Add(grpHex);
             tabSingle.Controls.Add(grpActions);
             tabSingle.Controls.Add(grpFileInfo);
@@ -363,8 +390,8 @@ namespace TheocracyEncDecGUI
 
             btnBatchAddFiles = new Button
             {
-                Text = "📂 Dodaj pliki...",
-                Size = new Size(125, 36),
+                Text = Strings.BtnBatchAddFiles,
+                Size = new Size(135, 36),
                 Location = new Point(5, 8),
                 BackColor = Color.FromArgb(41, 128, 185),
                 ForeColor = Color.White,
@@ -376,9 +403,9 @@ namespace TheocracyEncDecGUI
 
             btnBatchAddFolder = new Button
             {
-                Text = "📁 Dodaj folder...",
-                Size = new Size(125, 36),
-                Location = new Point(135, 8),
+                Text = Strings.BtnBatchAddFolder,
+                Size = new Size(135, 36),
+                Location = new Point(145, 8),
                 BackColor = Color.FromArgb(41, 128, 185),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -389,9 +416,9 @@ namespace TheocracyEncDecGUI
 
             btnBatchClear = new Button
             {
-                Text = "🗑 Wyczyść listę",
-                Size = new Size(115, 36),
-                Location = new Point(265, 8),
+                Text = Strings.BtnBatchClear,
+                Size = new Size(125, 36),
+                Location = new Point(285, 8),
                 BackColor = Color.FromArgb(149, 165, 166),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -401,10 +428,10 @@ namespace TheocracyEncDecGUI
 
             chkBatchBackup = new CheckBox
             {
-                Text = "Twórz kopie zapasowe (.bak)",
+                Text = Strings.ChkBatchBackup,
                 Checked = true,
                 AutoSize = true,
-                Location = new Point(400, 16),
+                Location = new Point(420, 16),
                 Font = new Font("Segoe UI", 8.5F)
             };
 
@@ -423,11 +450,11 @@ namespace TheocracyEncDecGUI
                 Font = new Font("Segoe UI", 9F)
             };
 
-            lvBatch.Columns.Add("Plik", 180);
-            lvBatch.Columns.Add("Stan", 140);
-            lvBatch.Columns.Add("Rozmiar", 100);
-            lvBatch.Columns.Add("Ścieżka", 320);
-            lvBatch.Columns.Add("Wynik operacji", 140);
+            lvBatch.Columns.Add(Strings.ColFile, 180);
+            lvBatch.Columns.Add(Strings.ColState, 140);
+            lvBatch.Columns.Add(Strings.ColSize, 100);
+            lvBatch.Columns.Add(Strings.ColPath, 320);
+            lvBatch.Columns.Add(Strings.ColResult, 140);
 
             pnlBatchBottom = new Panel
             {
@@ -438,8 +465,8 @@ namespace TheocracyEncDecGUI
 
             btnBatchDecode = new Button
             {
-                Text = "🔓 Odszyfruj zaznaczone",
-                Size = new Size(175, 36),
+                Text = Strings.BtnBatchDecode,
+                Size = new Size(185, 36),
                 Location = new Point(5, 12),
                 BackColor = Color.FromArgb(39, 174, 96),
                 ForeColor = Color.White,
@@ -451,9 +478,9 @@ namespace TheocracyEncDecGUI
 
             btnBatchEncode = new Button
             {
-                Text = "🔒 Zaszyfruj zaznaczone",
-                Size = new Size(175, 36),
-                Location = new Point(185, 12),
+                Text = Strings.BtnBatchEncode,
+                Size = new Size(185, 36),
+                Location = new Point(195, 12),
                 BackColor = Color.FromArgb(230, 126, 34),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -464,9 +491,9 @@ namespace TheocracyEncDecGUI
 
             btnBatchToggle = new Button
             {
-                Text = "🔄 Przełącz zaznaczone",
-                Size = new Size(175, 36),
-                Location = new Point(365, 12),
+                Text = Strings.BtnBatchToggle,
+                Size = new Size(185, 36),
+                Location = new Point(385, 12),
                 BackColor = Color.FromArgb(52, 73, 94),
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
@@ -477,14 +504,14 @@ namespace TheocracyEncDecGUI
 
             prgBatch = new ProgressBar
             {
-                Location = new Point(550, 12),
+                Location = new Point(580, 12),
                 Size = new Size(200, 20),
                 Visible = false
             };
 
             lblBatchProgress = new Label
             {
-                Location = new Point(550, 36),
+                Location = new Point(580, 36),
                 Size = new Size(250, 20),
                 Text = "",
                 Font = new Font("Segoe UI", 8F),
@@ -504,16 +531,23 @@ namespace TheocracyEncDecGUI
 
         private void SetupEvents()
         {
-            // Browse button
+            // Language selector
+            cmbLang.SelectedIndexChanged += (s, e) =>
+            {
+                Strings.CurrentLanguage = cmbLang.SelectedIndex == 1 ? AppLanguage.English : AppLanguage.Polish;
+                ApplyLanguage();
+                LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
+                    ? "Przełączono język interfejsu na: Polski"
+                    : "Interface language switched to: English");
+            };
+
             btnBrowse.Click += (s, e) => SelectSingleFile();
 
-            // Single file actions
             btnDecode.Click += (s, e) => ExecuteSingleOperation(CryptoAction.Decode);
             btnEncode.Click += (s, e) => ExecuteSingleOperation(CryptoAction.Encode);
             btnToggle.Click += (s, e) => ExecuteSingleOperation(CryptoAction.Toggle);
             btnSaveAs.Click += (s, e) => ExecuteSingleSaveAs();
 
-            // Batch events
             btnBatchAddFiles.Click += (s, e) => AddBatchFiles();
             btnBatchAddFolder.Click += (s, e) => AddBatchFolder();
             btnBatchClear.Click += (s, e) => lvBatch.Items.Clear();
@@ -522,13 +556,90 @@ namespace TheocracyEncDecGUI
             btnBatchEncode.Click += async (s, e) => await ExecuteBatchOperationAsync(CryptoAction.Encode);
             btnBatchToggle.Click += async (s, e) => await ExecuteBatchOperationAsync(CryptoAction.Toggle);
 
-            // Drag and drop handling
             this.DragEnter += OnFormDragEnter;
             this.DragDrop += OnFormDragDrop;
             pnlDropZone.DragEnter += OnFormDragEnter;
             pnlDropZone.DragDrop += OnFormDragDrop;
             lvBatch.DragEnter += OnFormDragEnter;
             lvBatch.DragDrop += OnFormDragDrop;
+        }
+
+        public void ApplyLanguage()
+        {
+            lblSubtitle.Text = Strings.Subtitle;
+            tabSingle.Text = Strings.TabSingle;
+            tabBatch.Text = Strings.TabBatch;
+
+            lblDropHint.Text = Strings.DropHint;
+            btnBrowse.Text = Strings.BtnBrowse;
+
+            grpFileInfo.Text = Strings.GrpFileInfo;
+            lblFilePath.Text = Strings.LblFile;
+            grpActions.Text = Strings.GrpActions;
+
+            btnDecode.Text = Strings.BtnDecode;
+            btnEncode.Text = Strings.BtnEncode;
+            btnToggle.Text = Strings.BtnToggle;
+            btnSaveAs.Text = Strings.BtnSaveAs;
+            chkBackup.Text = Strings.ChkBackup;
+
+            grpHex.Text = Strings.GrpHex;
+
+            btnBatchAddFiles.Text = Strings.BtnBatchAddFiles;
+            btnBatchAddFolder.Text = Strings.BtnBatchAddFolder;
+            btnBatchClear.Text = Strings.BtnBatchClear;
+            chkBatchBackup.Text = Strings.ChkBatchBackup;
+
+            if (lvBatch.Columns.Count >= 5)
+            {
+                lvBatch.Columns[0].Text = Strings.ColFile;
+                lvBatch.Columns[1].Text = Strings.ColState;
+                lvBatch.Columns[2].Text = Strings.ColSize;
+                lvBatch.Columns[3].Text = Strings.ColPath;
+                lvBatch.Columns[4].Text = Strings.ColResult;
+            }
+
+            btnBatchDecode.Text = Strings.BtnBatchDecode;
+            btnBatchEncode.Text = Strings.BtnBatchEncode;
+            btnBatchToggle.Text = Strings.BtnBatchToggle;
+
+            grpLog.Text = Strings.GrpLog;
+
+            // Refresh file display if a file is loaded
+            if (_currentFileData != null && _currentInspection != null && !string.IsNullOrEmpty(_currentFilePath))
+            {
+                lblFileSize.Text = Strings.LblSize(_currentFileData.Length);
+                lblFileModified.Text = Strings.LblModified(File.GetLastWriteTime(_currentFilePath));
+
+                if (_currentInspection.State == FileCryptoState.Encrypted)
+                {
+                    lblBadge.Text = Strings.BadgeEncrypted;
+                    lblDetails.Text = Strings.DetailsEncrypted(
+                        _currentFileData.Length - 7,
+                        _currentInspection.IsTheocracySave,
+                        _currentInspection.SaveDate,
+                        _currentInspection.IsTextConfig
+                    );
+                }
+                else
+                {
+                    lblBadge.Text = Strings.BadgeDecrypted;
+                    lblDetails.Text = Strings.DetailsDecrypted(
+                        _currentInspection.IsTheocracySave,
+                        _currentInspection.SaveDate,
+                        _currentInspection.SaveSignature,
+                        _currentInspection.IsTextConfig
+                    );
+                }
+            }
+            else
+            {
+                lblFileSize.Text = Strings.LblSizeNoFile;
+                lblFileModified.Text = Strings.LblModifiedNoFile;
+                lblBadge.Text = Strings.BadgeNoFile;
+                lblDetails.Text = Strings.DetailsDefaultHint;
+                statusLabel.Text = Strings.StatusReady;
+            }
         }
 
         private void OnFormDragEnter(object? sender, DragEventArgs e)
@@ -568,8 +679,10 @@ namespace TheocracyEncDecGUI
         {
             using var ofd = new OpenFileDialog
             {
-                Title = "Wybierz plik do dekodowania / kodowania",
-                Filter = "Wszystkie obsługiwane (*.tsg;*.txt;*.*)|*.tsg;*.txt;*.*|Pliki zapisu Theocracy (*.tsg)|*.tsg|Pliki konfiguracyjne (*.txt)|*.txt|Wszystkie pliki (*.*)|*.*",
+                Title = Strings.CurrentLanguage == AppLanguage.Polish ? "Wybierz plik do dekodowania / kodowania" : "Select file to decode / encode",
+                Filter = Strings.CurrentLanguage == AppLanguage.Polish
+                    ? "Wszystkie obsługiwane (*.tsg;*.txt;*.*)|*.tsg;*.txt;*.*|Pliki zapisu Theocracy (*.tsg)|*.tsg|Pliki konfiguracyjne (*.txt)|*.txt|Wszystkie pliki (*.*)|*.*"
+                    : "All supported (*.tsg;*.txt;*.*)|*.tsg;*.txt;*.*|Theocracy Save Files (*.tsg)|*.tsg|Config Files (*.txt)|*.txt|All Files (*.*)|*.*",
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
 
@@ -585,7 +698,10 @@ namespace TheocracyEncDecGUI
             {
                 if (!File.Exists(filePath))
                 {
-                    MessageBox.Show($"Nie znaleziono pliku:\n{filePath}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        Strings.CurrentLanguage == AppLanguage.Polish ? $"Nie znaleziono pliku:\n{filePath}" : $"File not found:\n{filePath}",
+                        Strings.CurrentLanguage == AppLanguage.Polish ? "Błąd" : "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -594,37 +710,53 @@ namespace TheocracyEncDecGUI
                 _currentInspection = TheocracyCrypto.InspectData(_currentFileData);
 
                 txtFilePath.Text = filePath;
-                lblFileSize.Text = $"Rozmiar: {_currentFileData.Length:N0} B ({_currentFileData.Length / 1024.0:F1} KB)";
-                lblFileModified.Text = $"Data modyfikacji: {File.GetLastWriteTime(filePath):yyyy-MM-dd HH:mm:ss}";
+                lblFileSize.Text = Strings.LblSize(_currentFileData.Length);
+                lblFileModified.Text = Strings.LblModified(File.GetLastWriteTime(filePath));
 
                 if (_currentInspection.State == FileCryptoState.Encrypted)
                 {
-                    lblBadge.Text = "🔒 ZASZYFROWANY [RSA4096]";
-                    lblBadge.BackColor = Color.FromArgb(46, 125, 50); // Dark Green
+                    lblBadge.Text = Strings.BadgeEncrypted;
+                    lblBadge.BackColor = Color.FromArgb(46, 125, 50);
                     btnDecode.Enabled = true;
                     btnEncode.Enabled = false;
+
+                    lblDetails.Text = Strings.DetailsEncrypted(
+                        _currentFileData.Length - 7,
+                        _currentInspection.IsTheocracySave,
+                        _currentInspection.SaveDate,
+                        _currentInspection.IsTextConfig
+                    );
                 }
                 else
                 {
-                    lblBadge.Text = "🔓 ODSZYFROWANY [Jawny]";
-                    lblBadge.BackColor = Color.FromArgb(21, 101, 192); // Blue
+                    lblBadge.Text = Strings.BadgeDecrypted;
+                    lblBadge.BackColor = Color.FromArgb(21, 101, 192);
                     btnDecode.Enabled = false;
                     btnEncode.Enabled = true;
+
+                    lblDetails.Text = Strings.DetailsDecrypted(
+                        _currentInspection.IsTheocracySave,
+                        _currentInspection.SaveDate,
+                        _currentInspection.SaveSignature,
+                        _currentInspection.IsTextConfig
+                    );
                 }
 
                 btnToggle.Enabled = true;
                 btnSaveAs.Enabled = true;
 
-                lblDetails.Text = _currentInspection.ExtraDetails;
                 txtHexDump.Text = TheocracyCrypto.GenerateHexDump(_currentFileData, 256);
 
-                statusLabel.Text = $"Wczytano: {Path.GetFileName(filePath)} ({lblBadge.Text})";
-                LogMessage($"Wczytano plik: {Path.GetFileName(filePath)} | Rozmiar: {_currentFileData.Length:N0} B | Stan: {lblBadge.Text}");
+                statusLabel.Text = Strings.StatusLoaded(Path.GetFileName(filePath), lblBadge.Text);
+                LogMessage(Strings.StatusLoaded(Path.GetFileName(filePath), lblBadge.Text) + $" | {lblFileSize.Text}");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Błąd podczas odczytu pliku:\n{ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                LogMessage($"[BŁĄD] Nie udało się wczytać pliku: {ex.Message}");
+                MessageBox.Show(
+                    (Strings.CurrentLanguage == AppLanguage.Polish ? "Błąd podczas odczytu pliku:\n" : "Error reading file:\n") + ex.Message,
+                    Strings.CurrentLanguage == AppLanguage.Polish ? "Błąd" : "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogMessage($"[ERROR] {ex.Message}");
             }
         }
 
@@ -634,7 +766,10 @@ namespace TheocracyEncDecGUI
         {
             if (string.IsNullOrEmpty(_currentFilePath) || _currentFileData == null || _currentInspection == null)
             {
-                MessageBox.Show("Nie wybrano pliku do przetworzenia.", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    Strings.CurrentLanguage == AppLanguage.Polish ? "Nie wybrano pliku do przetworzenia." : "No file selected for processing.",
+                    Strings.CurrentLanguage == AppLanguage.Polish ? "Uwaga" : "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -649,55 +784,62 @@ namespace TheocracyEncDecGUI
                         if (_currentInspection.State != FileCryptoState.Encrypted)
                         {
                             var dr = MessageBox.Show(
-                                "Plik nie ma nagłówka RSA4096 i wygląda na już odszyfrowany.\nCzy na pewno chcesz wymusić operację odszyfrowania?",
-                                "Potwierdzenie", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                Strings.MsgDecodeAlreadyPlain,
+                                Strings.CurrentLanguage == AppLanguage.Polish ? "Potwierdzenie" : "Confirmation",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                             if (dr != DialogResult.Yes) return;
                         }
                         outputData = TheocracyCrypto.Decrypt(_currentFileData);
-                        actionDesc = "Odszyfrowano";
+                        actionDesc = Strings.ActionDecoded;
                         break;
 
                     case CryptoAction.Encode:
                         if (_currentInspection.State == FileCryptoState.Encrypted)
                         {
                             var dr = MessageBox.Show(
-                                "Plik ma już nagłówek RSA4096 i wygląda na zaszyfrowany.\nCzy na pewno chcesz zaszyfrować go ponownie?",
-                                "Potwierdzenie", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                                Strings.MsgEncodeAlreadyEnc,
+                                Strings.CurrentLanguage == AppLanguage.Polish ? "Potwierdzenie" : "Confirmation",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                             if (dr != DialogResult.Yes) return;
                         }
                         outputData = TheocracyCrypto.Encrypt(_currentFileData);
-                        actionDesc = "Zaszyfrowano";
+                        actionDesc = Strings.ActionEncoded;
                         break;
 
                     case CryptoAction.Toggle:
                     default:
                         var toggleRes = TheocracyCrypto.Toggle(_currentFileData);
                         outputData = toggleRes.result;
-                        actionDesc = toggleRes.wasEncrypted ? "Odszyfrowano" : "Zaszyfrowano";
+                        actionDesc = toggleRes.wasEncrypted ? Strings.ActionDecoded : Strings.ActionEncoded;
                         break;
                 }
 
-                // Backup if requested
                 if (chkBackup.Checked)
                 {
                     string backupPath = _currentFilePath + ".bak";
                     File.Copy(_currentFilePath, backupPath, true);
-                    LogMessage($"Utworzono kopię zapasową: {Path.GetFileName(backupPath)}");
+                    LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
+                        ? $"Utworzono kopię zapasową: {Path.GetFileName(backupPath)}"
+                        : $"Backup created: {Path.GetFileName(backupPath)}");
                 }
 
-                // Write file
                 File.WriteAllBytes(_currentFilePath, outputData);
 
-                LogMessage($"[SUKCES] {actionDesc} plik: {Path.GetFileName(_currentFilePath)} ({_currentFileData.Length:N0} B -> {outputData.Length:N0} B)");
-                MessageBox.Show($"Pomyślnie wykonano operację: {actionDesc}!\nPlik został zaktualizowany.", "Sukces", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LogMessage($"[SUCCESS] {actionDesc}: {Path.GetFileName(_currentFilePath)} ({_currentFileData.Length:N0} B -> {outputData.Length:N0} B)");
+                MessageBox.Show(
+                    Strings.MsgSuccess(actionDesc),
+                    Strings.CurrentLanguage == AppLanguage.Polish ? "Sukces" : "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Reload
                 LoadSingleFile(_currentFilePath);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Wystąpił błąd podczas operacji:\n{ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                LogMessage($"[BŁĄD] Operacja nie powiodła się: {ex.Message}");
+                MessageBox.Show(
+                    (Strings.CurrentLanguage == AppLanguage.Polish ? "Wystąpił błąd podczas operacji:\n" : "An error occurred during operation:\n") + ex.Message,
+                    Strings.CurrentLanguage == AppLanguage.Polish ? "Błąd" : "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                LogMessage($"[ERROR] {ex.Message}");
             }
         }
 
@@ -717,8 +859,10 @@ namespace TheocracyEncDecGUI
 
             using var sfd = new SaveFileDialog
             {
-                Title = "Zapisz przetworzony plik jako...",
-                Filter = "Ten sam typ pliku (*" + ext + ")|*" + ext + "|Wszystkie pliki (*.*)|*.*",
+                Title = Strings.CurrentLanguage == AppLanguage.Polish ? "Zapisz przetworzony plik jako..." : "Save processed file as...",
+                Filter = Strings.CurrentLanguage == AppLanguage.Polish
+                    ? $"Ten sam typ pliku (*{ext})|*{ext}|Wszystkie pliki (*.*)|*.*"
+                    : $"Same file type (*{ext})|*{ext}|All files (*.*)|*.*",
                 InitialDirectory = dir,
                 FileName = suggestedName
             };
@@ -738,23 +882,33 @@ namespace TheocracyEncDecGUI
                     }
 
                     File.WriteAllBytes(sfd.FileName, outputData);
-                    LogMessage($"Zapisano jako nowy plik: {Path.GetFileName(sfd.FileName)} ({outputData.Length:N0} B)");
-                    MessageBox.Show($"Plik został pomyślnie zapisany jako:\n{sfd.FileName}", "Zapisano", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
+                        ? $"Zapisano jako nowy plik: {Path.GetFileName(sfd.FileName)} ({outputData.Length:N0} B)"
+                        : $"Saved as new file: {Path.GetFileName(sfd.FileName)} ({outputData.Length:N0} B)");
+
+                    MessageBox.Show(
+                        Strings.MsgSaveAsSaved(sfd.FileName),
+                        Strings.CurrentLanguage == AppLanguage.Polish ? "Zapisano" : "Saved",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Błąd podczas zapisu:\n{ex.Message}", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(
+                        (Strings.CurrentLanguage == AppLanguage.Polish ? "Błąd podczas zapisu:\n" : "Error saving file:\n") + ex.Message,
+                        Strings.CurrentLanguage == AppLanguage.Polish ? "Błąd" : "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
-        // Batch processing methods
         private void AddBatchFiles()
         {
             using var ofd = new OpenFileDialog
             {
-                Title = "Wybierz pliki do przetwarzania wsadowego",
-                Filter = "Wszystkie obsługiwane (*.tsg;*.txt;*.*)|*.tsg;*.txt;*.*|Pliki zapisu (*.tsg)|*.tsg|Pliki konfiguracyjne (*.txt)|*.txt|Wszystkie (*.*)|*.*",
+                Title = Strings.CurrentLanguage == AppLanguage.Polish ? "Wybierz pliki do przetwarzania wsadowego" : "Select files for batch processing",
+                Filter = Strings.CurrentLanguage == AppLanguage.Polish
+                    ? "Wszystkie obsługiwane (*.tsg;*.txt;*.*)|*.tsg;*.txt;*.*|Pliki zapisu (*.tsg)|*.tsg|Pliki konfiguracyjne (*.txt)|*.txt|Wszystkie (*.*)|*.*"
+                    : "All supported (*.tsg;*.txt;*.*)|*.tsg;*.txt;*.*|Save files (*.tsg)|*.tsg|Config files (*.txt)|*.txt|All files (*.*)|*.*",
                 Multiselect = true,
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
@@ -769,7 +923,7 @@ namespace TheocracyEncDecGUI
         {
             using var fbd = new FolderBrowserDialog
             {
-                Description = "Wybierz folder z plikami zapisu lub gry Theocracy",
+                Description = Strings.CurrentLanguage == AppLanguage.Polish ? "Wybierz folder z plikami Theocracy" : "Select folder with Theocracy files",
                 InitialDirectory = AppDomain.CurrentDomain.BaseDirectory
             };
 
@@ -795,7 +949,6 @@ namespace TheocracyEncDecGUI
 
                 if (!File.Exists(path)) continue;
 
-                // Check if already in list
                 bool exists = false;
                 foreach (ListViewItem existing in lvBatch.Items)
                 {
@@ -817,13 +970,15 @@ namespace TheocracyEncDecGUI
                     }
 
                     bool isEnc = TheocracyCrypto.StartsWithHeader(headerBytes);
-                    string stateStr = isEnc ? "🔒 Zaszyfrowany" : "🔓 Odszyfrowany";
+                    string stateStr = isEnc
+                        ? (Strings.CurrentLanguage == AppLanguage.Polish ? "🔒 Zaszyfrowany" : "🔒 Encrypted")
+                        : (Strings.CurrentLanguage == AppLanguage.Polish ? "🔓 Odszyfrowany" : "🔓 Decrypted");
 
                     var lvi = new ListViewItem(fi.Name);
                     lvi.SubItems.Add(stateStr);
                     lvi.SubItems.Add($"{fi.Length:N0} B");
                     lvi.SubItems.Add(path);
-                    lvi.SubItems.Add("Oczekuje");
+                    lvi.SubItems.Add(Strings.CurrentLanguage == AppLanguage.Polish ? "Oczekuje" : "Pending");
                     lvi.Checked = true;
 
                     lvBatch.Items.Add(lvi);
@@ -831,7 +986,9 @@ namespace TheocracyEncDecGUI
                 catch { }
             }
 
-            LogMessage($"Dodano pliki do listy wsadowej. Łącznie plików na liście: {lvBatch.Items.Count}");
+            LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
+                ? $"Dodano pliki do listy wsadowej. Łącznie plików na liście: {lvBatch.Items.Count}"
+                : $"Files added to batch list. Total files on list: {lvBatch.Items.Count}");
         }
 
         private async Task ExecuteBatchOperationAsync(CryptoAction action)
@@ -844,7 +1001,10 @@ namespace TheocracyEncDecGUI
 
             if (selectedItems.Count == 0)
             {
-                MessageBox.Show("Zaznacz co najmniej jeden plik do przetworzenia na liście (checkbox).", "Uwaga", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(
+                    Strings.CurrentLanguage == AppLanguage.Polish ? "Zaznacz co najmniej jeden plik do przetworzenia na liście." : "Select at least one file on the list.",
+                    Strings.CurrentLanguage == AppLanguage.Polish ? "Uwaga" : "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -861,7 +1021,7 @@ namespace TheocracyEncDecGUI
             {
                 var item = selectedItems[i];
                 string filePath = item.SubItems[3].Text;
-                lblBatchProgress.Text = $"Przetwarzanie {i + 1}/{selectedItems.Count}: {Path.GetFileName(filePath)}";
+                lblBatchProgress.Text = $"{i + 1}/{selectedItems.Count}: {Path.GetFileName(filePath)}";
 
                 try
                 {
@@ -875,27 +1035,27 @@ namespace TheocracyEncDecGUI
                     {
                         if (!isEnc)
                         {
-                            item.SubItems[4].Text = "Pominięto (już odszyfrowany)";
+                            item.SubItems[4].Text = Strings.CurrentLanguage == AppLanguage.Polish ? "Pominięto (jawny)" : "Skipped (plain)";
                             continue;
                         }
                         result = TheocracyCrypto.Decrypt(data);
-                        resDesc = "Odszyfrowano";
+                        resDesc = Strings.ActionDecoded;
                     }
                     else if (action == CryptoAction.Encode)
                     {
                         if (isEnc)
                         {
-                            item.SubItems[4].Text = "Pominięto (już zaszyfrowany)";
+                            item.SubItems[4].Text = Strings.CurrentLanguage == AppLanguage.Polish ? "Pominięto (zaszyfrowany)" : "Skipped (encrypted)";
                             continue;
                         }
                         result = TheocracyCrypto.Encrypt(data);
-                        resDesc = "Zaszyfrowano";
+                        resDesc = Strings.ActionEncoded;
                     }
-                    else // Toggle
+                    else
                     {
                         var tRes = TheocracyCrypto.Toggle(data);
                         result = tRes.result;
-                        resDesc = tRes.wasEncrypted ? "Odszyfrowano" : "Zaszyfrowano";
+                        resDesc = tRes.wasEncrypted ? Strings.ActionDecoded : Strings.ActionEncoded;
                     }
 
                     if (chkBatchBackup.Checked)
@@ -906,26 +1066,36 @@ namespace TheocracyEncDecGUI
                     await File.WriteAllBytesAsync(filePath, result);
 
                     bool newEnc = TheocracyCrypto.StartsWithHeader(result);
-                    item.SubItems[1].Text = newEnc ? "🔒 Zaszyfrowany" : "🔓 Odszyfrowany";
+                    item.SubItems[1].Text = newEnc
+                        ? (Strings.CurrentLanguage == AppLanguage.Polish ? "🔒 Zaszyfrowany" : "🔒 Encrypted")
+                        : (Strings.CurrentLanguage == AppLanguage.Polish ? "🔓 Odszyfrowany" : "🔓 Decrypted");
                     item.SubItems[2].Text = $"{result.Length:N0} B";
                     item.SubItems[4].Text = $"OK ({resDesc})";
                     successCount++;
                 }
                 catch (Exception ex)
                 {
-                    item.SubItems[4].Text = $"Błąd: {ex.Message}";
+                    item.SubItems[4].Text = $"Error: {ex.Message}";
                     errorCount++;
-                    LogMessage($"[BŁĄD WSADOWY] {Path.GetFileName(filePath)}: {ex.Message}");
+                    LogMessage($"[BATCH ERROR] {Path.GetFileName(filePath)}: {ex.Message}");
                 }
 
                 prgBatch.Value = i + 1;
             }
 
-            lblBatchProgress.Text = $"Zakończono! Sukces: {successCount}, Błędy: {errorCount}";
-            LogMessage($"Przetwarzanie wsadowe zakończone. Przetworzono {successCount} plików, błędów: {errorCount}.");
-            MessageBox.Show($"Przetwarzanie wsadowe zakończone.\nSukces: {successCount} plików\nBłędy: {errorCount}", "Wynik", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            lblBatchProgress.Text = Strings.CurrentLanguage == AppLanguage.Polish
+                ? $"Zakończono! Sukces: {successCount}, Błędy: {errorCount}"
+                : $"Done! Success: {successCount}, Errors: {errorCount}";
 
-            // If the single file view has one of the edited files, reload it
+            LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
+                ? $"Przetwarzanie wsadowe zakończone. Sukces: {successCount}, błędy: {errorCount}."
+                : $"Batch processing completed. Success: {successCount}, errors: {errorCount}.");
+
+            MessageBox.Show(
+                Strings.BatchCompleted(successCount, errorCount),
+                Strings.CurrentLanguage == AppLanguage.Polish ? "Wynik" : "Result",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+
             if (!string.IsNullOrEmpty(_currentFilePath))
             {
                 LoadSingleFile(_currentFilePath);
