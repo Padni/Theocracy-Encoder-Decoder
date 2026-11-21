@@ -31,8 +31,8 @@ namespace TheocracyEncDecGUI
             : "Drag & drop a file here (.tsg, .txt) or use the browse button:";
 
         public static string BtnBrowse => CurrentLanguage == AppLanguage.Polish
-            ? "📂 Przeglądaj..."
-            : "📂 Browse...";
+            ? "Przeglądaj..."
+            : "Browse...";
 
         public static string GrpFileInfo => CurrentLanguage == AppLanguage.Polish
             ? "Informacje o wybranym pliku"
@@ -61,12 +61,12 @@ namespace TheocracyEncDecGUI
             : "NO FILE";
 
         public static string BadgeEncrypted => CurrentLanguage == AppLanguage.Polish
-            ? "🔒 ZASZYFROWANY [RSA4096]"
-            : "🔒 ENCRYPTED [RSA4096]";
+            ? "ZASZYFROWANY [RSA4096]"
+            : "ENCRYPTED [RSA4096]";
 
         public static string BadgeDecrypted => CurrentLanguage == AppLanguage.Polish
-            ? "🔓 ODSZYFROWANY [Jawny]"
-            : "🔓 DECRYPTED [Plaintext]";
+            ? "ODSZYFROWANY [Jawny]"
+            : "DECRYPTED [Plaintext]";
 
         public static string DetailsDefaultHint => CurrentLanguage == AppLanguage.Polish
             ? "Wybierz plik zapisu gry (.tsg) lub plik konfiguracyjny (.txt), aby zbadać jego strukturę."
@@ -113,20 +113,20 @@ namespace TheocracyEncDecGUI
             : "Encryption / Decryption Actions";
 
         public static string BtnDecode => CurrentLanguage == AppLanguage.Polish
-            ? "🔓 Odszyfruj (Decode)"
-            : "🔓 Decode (Decrypt)";
+            ? "Odszyfruj (Decode)"
+            : "Decode (Decrypt)";
 
         public static string BtnEncode => CurrentLanguage == AppLanguage.Polish
-            ? "🔒 Zaszyfruj (Encode)"
-            : "🔒 Encode (Encrypt)";
+            ? "Zaszyfruj (Encode)"
+            : "Encode (Encrypt)";
 
         public static string BtnToggle => CurrentLanguage == AppLanguage.Polish
-            ? "🔄 Przełącz (Auto)"
-            : "🔄 Toggle (Auto)";
+            ? "Przełącz (Auto)"
+            : "Toggle (Auto)";
 
         public static string BtnSaveAs => CurrentLanguage == AppLanguage.Polish
-            ? "💾 Zapisz jako..."
-            : "💾 Save As...";
+            ? "Zapisz jako..."
+            : "Save As...";
 
         public static string ChkBackup => CurrentLanguage == AppLanguage.Polish
             ? "Twórz kopię zapasową (.bak) przed zapisem"
@@ -137,16 +137,16 @@ namespace TheocracyEncDecGUI
             : "Hexadecimal & Text Preview (first 256 bytes)";
 
         public static string BtnBatchAddFiles => CurrentLanguage == AppLanguage.Polish
-            ? "📂 Dodaj pliki..."
-            : "📂 Add Files...";
+            ? "Dodaj pliki..."
+            : "Add Files...";
 
         public static string BtnBatchAddFolder => CurrentLanguage == AppLanguage.Polish
-            ? "📁 Dodaj folder..."
-            : "📁 Add Folder...";
+            ? "Dodaj folder..."
+            : "Add Folder...";
 
         public static string BtnBatchClear => CurrentLanguage == AppLanguage.Polish
-            ? "🗑 Wyczyść listę"
-            : "🗑 Clear List";
+            ? "Wyczyść listę"
+            : "Clear List";
 
         public static string ChkBatchBackup => CurrentLanguage == AppLanguage.Polish
             ? "Twórz kopie zapasowe (.bak)"
@@ -159,16 +159,16 @@ namespace TheocracyEncDecGUI
         public static string ColResult => CurrentLanguage == AppLanguage.Polish ? "Wynik operacji" : "Operation Result";
 
         public static string BtnBatchDecode => CurrentLanguage == AppLanguage.Polish
-            ? "🔓 Odszyfruj zaznaczone"
-            : "🔓 Decode Selected";
+            ? "Odszyfruj zaznaczone"
+            : "Decode Selected";
 
         public static string BtnBatchEncode => CurrentLanguage == AppLanguage.Polish
-            ? "🔒 Zaszyfruj zaznaczone"
-            : "🔒 Encode Selected";
+            ? "Zaszyfruj zaznaczone"
+            : "Encode Selected";
 
         public static string BtnBatchToggle => CurrentLanguage == AppLanguage.Polish
-            ? "🔄 Przełącz zaznaczone"
-            : "🔄 Toggle Selected";
+            ? "Przełącz zaznaczone"
+            : "Toggle Selected";
 
         public static string GrpLog => CurrentLanguage == AppLanguage.Polish
             ? "Dziennik zdarzeń (Log)"

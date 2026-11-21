@@ -13,8 +13,11 @@ namespace TheocracyEncDecGUI
         private Panel pnlHeader = null!;
         private Label lblTitle = null!;
         private Label lblSubtitle = null!;
-        private Label lblLang = null!;
-        private ComboBox cmbLang = null!;
+
+        // Language selector panel and buttons
+        private Panel pnlLang = null!;
+        private Button btnLangPL = null!;
+        private Button btnLangEN = null!;
 
         // Tabs
         private TabControl tabControl = null!;
@@ -78,6 +81,7 @@ namespace TheocracyEncDecGUI
             BuildCustomUi();
             SetupEvents();
             ApplyLanguage();
+            UpdateLanguageButtonStyles();
             LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
                 ? "Program Theocracy Encoder / Decoder uruchomiony. Wybierz plik lub przeciągnij go do okna."
                 : "Theocracy Encoder / Decoder started. Select a file or drag & drop it into the window.");
@@ -92,7 +96,7 @@ namespace TheocracyEncDecGUI
             pnlHeader = new Panel
             {
                 Dock = DockStyle.Top,
-                Height = 65,
+                Height = 68,
                 BackColor = Color.FromArgb(26, 36, 54),
                 Padding = new Padding(20, 10, 20, 10)
             };
@@ -100,6 +104,7 @@ namespace TheocracyEncDecGUI
             lblTitle = new Label
             {
                 Text = Strings.AppTitle,
+                UseMnemonic = false,
                 Font = new Font("Segoe UI", 13F, FontStyle.Bold),
                 ForeColor = Color.FromArgb(240, 192, 64),
                 AutoSize = true,
@@ -109,40 +114,54 @@ namespace TheocracyEncDecGUI
             lblSubtitle = new Label
             {
                 Text = Strings.Subtitle,
+                UseMnemonic = false,
                 Font = new Font("Segoe UI", 8.5F, FontStyle.Regular),
                 ForeColor = Color.FromArgb(200, 210, 225),
                 AutoSize = true,
-                Location = new Point(20, 36)
+                Location = new Point(20, 38)
             };
 
-            lblLang = new Label
+            // Dedicated Language switch panel (always kept on the right via Resize event)
+            pnlLang = new Panel
             {
-                Text = "🌐 Language / Język:",
-                Font = new Font("Segoe UI", 8.5F),
-                ForeColor = Color.FromArgb(180, 195, 215),
-                AutoSize = true,
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                Location = new Point(650, 22)
+                Size = new Size(240, 42),
+                BackColor = Color.FromArgb(36, 48, 70),
+                Location = new Point(680, 13)
             };
 
-            cmbLang = new ComboBox
+            btnLangPL = new Button
             {
-                DropDownStyle = ComboBoxStyle.DropDownList,
-                Width = 135,
+                Text = "🇵🇱 Polski",
                 Font = new Font("Segoe UI", 9F, FontStyle.Bold),
-                Anchor = AnchorStyles.Top | AnchorStyles.Right,
-                Location = new Point(780, 18),
-                BackColor = Color.White,
+                Size = new Size(110, 32),
+                Location = new Point(6, 5),
+                FlatStyle = FlatStyle.Flat,
                 Cursor = Cursors.Hand
             };
-            cmbLang.Items.Add("🇵🇱 Polski");
-            cmbLang.Items.Add("🇬🇧 English");
-            cmbLang.SelectedIndex = 0;
+            btnLangPL.FlatAppearance.BorderSize = 0;
 
+            btnLangEN = new Button
+            {
+                Text = "🇬🇧 English",
+                Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+                Size = new Size(110, 32),
+                Location = new Point(122, 5),
+                FlatStyle = FlatStyle.Flat,
+                Cursor = Cursors.Hand
+            };
+            btnLangEN.FlatAppearance.BorderSize = 0;
+
+            pnlLang.Controls.Add(btnLangPL);
+            pnlLang.Controls.Add(btnLangEN);
+
+            pnlHeader.Controls.Add(pnlLang);
             pnlHeader.Controls.Add(lblTitle);
             pnlHeader.Controls.Add(lblSubtitle);
-            pnlHeader.Controls.Add(lblLang);
-            pnlHeader.Controls.Add(cmbLang);
+
+            pnlHeader.Resize += (s, e) =>
+            {
+                pnlLang.Location = new Point(pnlHeader.ClientSize.Width - pnlLang.Width - 15, 13);
+            };
 
             // 2. Status Strip at bottom
             statusStrip = new StatusStrip();
@@ -186,7 +205,6 @@ namespace TheocracyEncDecGUI
             BuildSingleFileTab();
             BuildBatchTab();
 
-            // Assemble main controls
             this.Controls.Add(tabControl);
             this.Controls.Add(grpLog);
             this.Controls.Add(statusStrip);
@@ -531,14 +549,27 @@ namespace TheocracyEncDecGUI
 
         private void SetupEvents()
         {
-            // Language selector
-            cmbLang.SelectedIndexChanged += (s, e) =>
+            // Language buttons
+            btnLangPL.Click += (s, e) =>
             {
-                Strings.CurrentLanguage = cmbLang.SelectedIndex == 1 ? AppLanguage.English : AppLanguage.Polish;
-                ApplyLanguage();
-                LogMessage(Strings.CurrentLanguage == AppLanguage.Polish
-                    ? "Przełączono język interfejsu na: Polski"
-                    : "Interface language switched to: English");
+                if (Strings.CurrentLanguage != AppLanguage.Polish)
+                {
+                    Strings.CurrentLanguage = AppLanguage.Polish;
+                    UpdateLanguageButtonStyles();
+                    ApplyLanguage();
+                    LogMessage("Przełączono język interfejsu na: Polski");
+                }
+            };
+
+            btnLangEN.Click += (s, e) =>
+            {
+                if (Strings.CurrentLanguage != AppLanguage.English)
+                {
+                    Strings.CurrentLanguage = AppLanguage.English;
+                    UpdateLanguageButtonStyles();
+                    ApplyLanguage();
+                    LogMessage("Interface language switched to: English");
+                }
             };
 
             btnBrowse.Click += (s, e) => SelectSingleFile();
@@ -562,6 +593,26 @@ namespace TheocracyEncDecGUI
             pnlDropZone.DragDrop += OnFormDragDrop;
             lvBatch.DragEnter += OnFormDragEnter;
             lvBatch.DragDrop += OnFormDragDrop;
+        }
+
+        private void UpdateLanguageButtonStyles()
+        {
+            if (Strings.CurrentLanguage == AppLanguage.Polish)
+            {
+                btnLangPL.BackColor = Color.FromArgb(240, 192, 64);
+                btnLangPL.ForeColor = Color.FromArgb(20, 25, 35);
+
+                btnLangEN.BackColor = Color.FromArgb(50, 62, 85);
+                btnLangEN.ForeColor = Color.FromArgb(210, 220, 235);
+            }
+            else
+            {
+                btnLangEN.BackColor = Color.FromArgb(240, 192, 64);
+                btnLangEN.ForeColor = Color.FromArgb(20, 25, 35);
+
+                btnLangPL.BackColor = Color.FromArgb(50, 62, 85);
+                btnLangPL.ForeColor = Color.FromArgb(210, 220, 235);
+            }
         }
 
         public void ApplyLanguage()
@@ -605,7 +656,6 @@ namespace TheocracyEncDecGUI
 
             grpLog.Text = Strings.GrpLog;
 
-            // Refresh file display if a file is loaded
             if (_currentFileData != null && _currentInspection != null && !string.IsNullOrEmpty(_currentFilePath))
             {
                 lblFileSize.Text = Strings.LblSize(_currentFileData.Length);
@@ -971,8 +1021,8 @@ namespace TheocracyEncDecGUI
 
                     bool isEnc = TheocracyCrypto.StartsWithHeader(headerBytes);
                     string stateStr = isEnc
-                        ? (Strings.CurrentLanguage == AppLanguage.Polish ? "🔒 Zaszyfrowany" : "🔒 Encrypted")
-                        : (Strings.CurrentLanguage == AppLanguage.Polish ? "🔓 Odszyfrowany" : "🔓 Decrypted");
+                        ? (Strings.CurrentLanguage == AppLanguage.Polish ? "Zaszyfrowany" : "Encrypted")
+                        : (Strings.CurrentLanguage == AppLanguage.Polish ? "Odszyfrowany" : "Decrypted");
 
                     var lvi = new ListViewItem(fi.Name);
                     lvi.SubItems.Add(stateStr);
@@ -1067,8 +1117,8 @@ namespace TheocracyEncDecGUI
 
                     bool newEnc = TheocracyCrypto.StartsWithHeader(result);
                     item.SubItems[1].Text = newEnc
-                        ? (Strings.CurrentLanguage == AppLanguage.Polish ? "🔒 Zaszyfrowany" : "🔒 Encrypted")
-                        : (Strings.CurrentLanguage == AppLanguage.Polish ? "🔓 Odszyfrowany" : "🔓 Decrypted");
+                        ? (Strings.CurrentLanguage == AppLanguage.Polish ? "Zaszyfrowany" : "Encrypted")
+                        : (Strings.CurrentLanguage == AppLanguage.Polish ? "Odszyfrowany" : "Decrypted");
                     item.SubItems[2].Text = $"{result.Length:N0} B";
                     item.SubItems[4].Text = $"OK ({resDesc})";
                     successCount++;
