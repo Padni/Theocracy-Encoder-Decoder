@@ -1,0 +1,33 @@
+# .NET & Visual Studio build artifacts
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.pdb
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+venv/
+env/
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# User backups and game data files
+*.bak
+*.tsg
+selap.txt
+
+# Release distribution zip archives (keep build outputs out of git history if desired)
+/release/*.zip
